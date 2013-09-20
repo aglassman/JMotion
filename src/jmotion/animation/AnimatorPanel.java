@@ -110,9 +110,10 @@ public abstract class AnimatorPanel extends JPanel implements Runnable {
 	protected int mouseY;
 	protected boolean isMouseOver;
 	protected boolean mouseClicked;
+
+	protected int frameSleep;
 	
 	private Image doubleBuffImage;
 	private Thread animator;
-	private int frameSleep;
 	private int targetFPS;	
 }
