@@ -29,11 +29,9 @@ public abstract class AnimatorPanel extends JPanel implements Runnable {
 	}
 
 	public void run() {
-		long frameTime;
 		while(true) {
-			frameTime = System.currentTimeMillis();
-			
-			// get mouse data
+			long frameStart = System.currentTimeMillis();
+
 			Point mouse = getMousePosition();
 			if (mouse != null) {
 				isMouseOver = true;
@@ -43,9 +41,9 @@ public abstract class AnimatorPanel extends JPanel implements Runnable {
 				isMouseOver = false;
 			}
 			mouseClicked = mouseClickedEvent;
-			
-			// Deriving type will step its time forward
-			advanceFrame(0);
+
+			// Deriving class will step its time forward
+			advanceFrame(frameSleep);
 
 			doubleBuffImage = createImage(getWidth(), getHeight());
 			if (doubleBuffImage != null)
@@ -57,9 +55,10 @@ public abstract class AnimatorPanel extends JPanel implements Runnable {
 			// Reset mouse data, waiting for new events in the sleep time
 			mouseClickedEvent = false;
 			
-			frameTime = System.currentTimeMillis() - frameTime;
+			int frameRenderTime = (int) (System.currentTimeMillis() - frameStart);
+			
 			try {
-				Thread.sleep(Math.max(frameSleep - frameTime, 20));
+				Thread.sleep(Math.max(frameSleep - frameRenderTime, 20));
 			} catch (InterruptedException ie) {
 				System.out.println("Animation thread interrupted!");
 				ie.printStackTrace();
