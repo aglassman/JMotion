@@ -1,4 +1,4 @@
-package jmotion;
+package jmotion.animation;
 
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;

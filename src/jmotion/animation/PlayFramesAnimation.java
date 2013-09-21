@@ -1,14 +1,16 @@
 package jmotion.animation;
 
-import jmotion.FrameSet;
 
 public class PlayFramesAnimation extends Animation {
 
 	public void stepAhead(int millis) {
-		frameSet.advanceFrame();
+		if (!firstFrame)
+			frameSet.advanceFrame();
+		firstFrame = false;
 	}
 
 	public void start() {
+		firstFrame = true;
 		frameSet.beginSequence(sequence);
 	}
 	
@@ -21,6 +23,7 @@ public class PlayFramesAnimation extends Animation {
 		this.sequence = sequence;
 	}
 
+	private boolean firstFrame;
 	private FrameSet frameSet;
 	private int sequence;
 }

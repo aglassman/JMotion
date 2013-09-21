@@ -13,6 +13,7 @@ import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 
+import jmotion.animation.FrameSet;
 import jmotion.construction.SpriteSheet;
 
 public class AnimationFactory {

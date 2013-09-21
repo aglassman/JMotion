@@ -1,4 +1,4 @@
-package jmotion;
+package jmotion.animation;
 
 import java.awt.Image;
 import java.io.Serializable;
