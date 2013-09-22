@@ -2,6 +2,7 @@
 package jmotion.animation;
 
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -9,10 +10,30 @@ import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public abstract class AnimatorPanel extends JPanel implements Runnable {
 	private static final long serialVersionUID = 1L;
+	
+	public void showDiagnostics() {
+		JFrame window = new JFrame();
+		window.setSize(200, 100);
+
+		frameRenderLabel = new JLabel();
+		frameSleepLabel = new JLabel();
+
+		window.setLayout(new FlowLayout());
+		window.add(new JLabel("render time: "));
+		window.add(frameRenderLabel);
+		window.add(new JLabel("sleep time: "));
+		window.add(frameSleepLabel);
+		
+		window.setVisible(true);
+		window.setLocationRelativeTo(this);
+		debugWindow = true;
+	}
 	
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -56,9 +77,15 @@ public abstract class AnimatorPanel extends JPanel implements Runnable {
 			mouseClickedEvent = false;
 			
 			int frameRenderTime = (int) (System.currentTimeMillis() - frameStart);
+			int sleepTime = Math.max(frameSleep - frameRenderTime, 20);
+			
+			if (debugWindow) {
+				frameRenderLabel.setText(frameRenderTime+"");
+				frameSleepLabel.setText(sleepTime+"");
+			}
 			
 			try {
-				Thread.sleep(Math.max(frameSleep - frameRenderTime, 20));
+				Thread.sleep(sleepTime);
 			} catch (InterruptedException ie) {
 				System.out.println("Animation thread interrupted!");
 				ie.printStackTrace();
@@ -114,5 +141,9 @@ public abstract class AnimatorPanel extends JPanel implements Runnable {
 	
 	private Image doubleBuffImage;
 	private Thread animator;
-	private int targetFPS;	
+	private int targetFPS;
+	
+	private boolean debugWindow;
+	private JLabel frameSleepLabel;
+	private JLabel frameRenderLabel;
 }

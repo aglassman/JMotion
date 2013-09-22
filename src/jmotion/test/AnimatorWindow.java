@@ -25,6 +25,8 @@ public class AnimatorWindow extends JFrame {
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
+		
+		panel.showDiagnostics();
 	}
 	
 	private DefaultAnimatorPanel panel;
