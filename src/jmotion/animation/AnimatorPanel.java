@@ -42,7 +42,12 @@ public abstract class AnimatorPanel extends JPanel implements Runnable {
 	    	g.drawImage(doubleBuffImage, 0, 0, null);
 	}
 
+	public void pauseAnimating() {
+		isPaused = true;
+	}
+	
 	public void startAnimating() {
+		isPaused = false;
 		if (animator == null) {
 			animator = new Thread(this);
 			animator.start();
@@ -53,29 +58,31 @@ public abstract class AnimatorPanel extends JPanel implements Runnable {
 		while(true) {
 			long frameStart = System.currentTimeMillis();
 
-			Point mouse = getMousePosition();
-			if (mouse != null) {
-				isMouseOver = true;
-				mouseX = mouse.x;
-				mouseY = mouse.y;
-			} else {
-				isMouseOver = false;
+			if (!isPaused) {
+				Point mouse = getMousePosition();
+				if (mouse != null) {
+					isMouseOver = true;
+					mouseX = mouse.x;
+					mouseY = mouse.y;
+				} else {
+					isMouseOver = false;
+				}
+				mouseClicked = mouseClickedEvent;
+	
+				// Deriving class will step its time forward
+				advanceFrame(frameSleep);
+	
+				doubleBuffImage = createImage(getWidth(), getHeight());
+				if (doubleBuffImage != null)
+					render((Graphics2D)doubleBuffImage.getGraphics());
+	
+				// Schedule rendering the buffer
+				repaint();
+				
+				// Reset mouse data, waiting for new events in the sleep time
+				mouseClickedEvent = false;
 			}
-			mouseClicked = mouseClickedEvent;
 
-			// Deriving class will step its time forward
-			advanceFrame(frameSleep);
-
-			doubleBuffImage = createImage(getWidth(), getHeight());
-			if (doubleBuffImage != null)
-				render((Graphics2D)doubleBuffImage.getGraphics());
-
-			// Schedule rendering the buffer
-			repaint();
-			
-			// Reset mouse data, waiting for new events in the sleep time
-			mouseClickedEvent = false;
-			
 			int frameRenderTime = (int) (System.currentTimeMillis() - frameStart);
 			int sleepTime = Math.max(frameSleep - frameRenderTime, 20);
 			
@@ -83,7 +90,6 @@ public abstract class AnimatorPanel extends JPanel implements Runnable {
 				frameRenderLabel.setText(frameRenderTime+"");
 				frameSleepLabel.setText(sleepTime+"");
 			}
-			
 			try {
 				Thread.sleep(sleepTime);
 			} catch (InterruptedException ie) {
@@ -143,6 +149,7 @@ public abstract class AnimatorPanel extends JPanel implements Runnable {
 	private Thread animator;
 	private int targetFPS;
 	
+	private boolean isPaused;
 	private boolean debugWindow;
 	private JLabel frameSleepLabel;
 	private JLabel frameRenderLabel;
