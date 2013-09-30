@@ -25,7 +25,9 @@ public class FrameSet {
 	}
 	
 	public void advanceFrame() {
-		currentFrame = (currentFrame + 1) % currentSet.size();
+		++currentFrame;
+		if (currentFrame >= currentSet.size())
+			currentFrame = 0;
 	}
 	
 	public void setSequence(int sequenceNum) {
