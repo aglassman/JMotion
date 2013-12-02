@@ -33,31 +33,32 @@ public class AnimationFactory {
 
 		String[] directions = new String[] {"u", "r", "d", "l"};
 		String[] actions = new String[] {"walk", "attack", "die"};
+
 		int numRows = (actions.length+1) * directions.length;
 		
-		int row = 0;
 		int width = 50;
 		int height = 70;
 		SpriteSheet sheet = new SpriteSheet(8, numRows, width, height, 0);
-		
+
+		int row = 0;
 		for (String dir : directions) {
 			// stand
-			fillRowFromImage(sheet, sourcesPath+name+"/"+name+" "+dir +".gif", row++, width, height);
+			fillRowFromImage(sheet, 1, sourcesPath+name+"/"+name+" "+dir +".gif", row++);
 			
 			// other actions
-			for (String action : actions) {
-				addRowFromVertical(sheet, sourcesPath+name+"/"+name+" "+dir+" "+action+".gif", row++, width, height);
-			}
+			addRowFromVertical(sheet, 4, sourcesPath+name+"/"+name+" "+dir+" walk.gif", row++, width, height);
+			addRowFromVertical(sheet, 8, sourcesPath+name+"/"+name+" "+dir+" attack.gif", row++, width, height);
+			++row; // no animation for dying
 		}
 		
 		sheet.write(ASSETS_PATH, name);
 	}
 
-	private static void addRowFromVertical(SpriteSheet target, String sourceFile, int row, int sourceFrameWidth, int sourceFrameHeight) {
+	private static void addRowFromVertical(SpriteSheet target, int numFrames, String sourceFile, int row, int sourceFrameWidth, int sourceFrameHeight) {
 		try {
 			BufferedImage i = ImageIO.read(new File(sourceFile));
 			
-			for (int f = 0; f<target.getNumFrames(); ++f) {
+			for (int f = 0; f<numFrames; ++f) {
 				try {
 					Image frame = i.getSubimage(0, f*sourceFrameHeight, sourceFrameWidth, sourceFrameHeight);
 					target.drawCenteredFrame(frame, row, f);
@@ -70,11 +71,11 @@ public class AnimationFactory {
 		}
 	}
 
-	private static void fillRowFromImage(SpriteSheet target, String sourceFile, int row, int sourceFrameWidth, int sourceFrameHeight) {
+	private static void fillRowFromImage(SpriteSheet target, int numFrames, String sourceFile, int row) {
 		try {
 			BufferedImage i = ImageIO.read(new File(sourceFile));
 			
-			for (int f = 0; f<target.getNumFrames(); ++f) {
+			for (int f = 0; f<numFrames; ++f) {
 				target.drawCenteredFrame(i, row, f);
 			}
 		} catch (IOException e) {
@@ -128,6 +129,7 @@ public class AnimationFactory {
 	 * Load a Manifest and a Sprite-Sheet and use them to construct a FrameSetAnimation
 	 */
 	public static FrameSet get(String name) {
+		System.out.println("Getting animation for " + name);
 		name = name.toLowerCase();
 		if (cachedAnimations.containsKey(name))
 			return cachedAnimations.get(name).clone();
@@ -140,14 +142,15 @@ public class AnimationFactory {
 	
 			String[] numbers = manifestScanner.nextLine().split(" ");
 			int numRows = Integer.parseInt(numbers[0]);
-			int framesLong = Integer.parseInt(numbers[1]);
 			int frameWidth = Integer.parseInt(numbers[2]);
 			int frameHeight = Integer.parseInt(numbers[3]);
 			int frameBuffer = Integer.parseInt(numbers[4]);
+			String[] lengths = manifestScanner.nextLine().split(" ");
 
 			FrameSet animation = new FrameSet(frameWidth, frameHeight);
 			for (int row = 0; row < numRows; ++row) {
-				for (int f = 0; f < framesLong; ++f) {
+				int rowLength = Integer.parseInt(lengths[row]);
+				for (int f = 0; f < rowLength; ++f) {
 					int x = columnX(f, frameWidth, frameBuffer);
 					int y = rowY(row, frameHeight, frameBuffer);
 

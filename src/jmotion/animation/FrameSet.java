@@ -16,7 +16,7 @@ public class FrameSet {
 	public void addFrame(int sequence, BufferedImage frameImage) {
 		if (framesets.size() <= sequence)
 			framesets.add(new LinkedList<BufferedImage>());
-		
+
 		framesets.get(sequence).add(frameImage);
 	}
 

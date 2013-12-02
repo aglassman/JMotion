@@ -9,7 +9,7 @@ import java.util.Iterator;
  * This allows Sprites to be rendered so that their overlap pattern is appropriate.
  *
  */
-public class SpriteSpace implements Iterable<Sprite> {
+public class SpriteSpace implements SpriteLayer {
 
 	public Iterator<Sprite> iterator() {
 		return new Iterator<Sprite>() {
@@ -68,6 +68,10 @@ public class SpriteSpace implements Iterable<Sprite> {
 	public void removeSprite(Sprite s) {
 		SpriteNode before = findBefore(s);
 		before.next = before.next.next;
+	}
+	
+	public void removeAll() {
+		head.next = tail;
 	}
 	
 	public SpriteSpace() {
