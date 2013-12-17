@@ -29,8 +29,8 @@ public class AnimationFactory {
 
 	public static void main(String[] args) {
 		String sourcesPath = "assets/sources/";
-		String folderName = "mercenary";
-		String name = "merc";
+		String folderName = "peasant";
+		String name = "peasant";
 
 		String[] directions = new String[] {"u", "r", "d", "l"};
 		String[] actions = new String[] {"walk", "attack", "die"};
