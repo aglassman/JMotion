@@ -29,14 +29,14 @@ public class AnimationFactory {
 
 	public static void main(String[] args) {
 		String sourcesPath = "assets/sources/";
-		String name = "pantheon";
+		String name = "knight";
 
 		String[] directions = new String[] {"u", "r", "d", "l"};
 		String[] actions = new String[] {"walk", "attack", "die"};
 
 		int numRows = (actions.length+1) * directions.length;
 		
-		int width = 50;
+		int width = 70;
 		int height = 70;
 		SpriteSheet sheet = new SpriteSheet(8, numRows, width, height, 0);
 
@@ -129,7 +129,6 @@ public class AnimationFactory {
 	 * Load a Manifest and a Sprite-Sheet and use them to construct a FrameSetAnimation
 	 */
 	public static FrameSet get(String name) {
-		System.out.println("Getting animation for " + name);
 		name = name.toLowerCase();
 		if (cachedAnimations.containsKey(name))
 			return cachedAnimations.get(name).clone();
@@ -165,7 +164,6 @@ public class AnimationFactory {
 			
 			return animation;
 		} catch (IOException e) {
-			System.out.println("Could not find asset for \""+name+"\".");
 			return null;
 		} finally {
 			if (manifestScanner != null)
