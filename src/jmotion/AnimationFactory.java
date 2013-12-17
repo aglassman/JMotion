@@ -29,29 +29,30 @@ public class AnimationFactory {
 
 	public static void main(String[] args) {
 		String sourcesPath = "assets/sources/";
-		String name = "knight";
+		String folderName = "mercenary";
+		String name = "merc";
 
 		String[] directions = new String[] {"u", "r", "d", "l"};
 		String[] actions = new String[] {"walk", "attack", "die"};
 
 		int numRows = (actions.length+1) * directions.length;
 		
-		int width = 70;
-		int height = 70;
+		int width = 50;
+		int height = 50;
 		SpriteSheet sheet = new SpriteSheet(8, numRows, width, height, 0);
 
 		int row = 0;
 		for (String dir : directions) {
 			// stand
-			fillRowFromImage(sheet, 1, sourcesPath+name+"/"+name+" "+dir +".gif", row++);
+			fillRowFromImage(sheet, 1, sourcesPath+folderName+"/"+name+" "+dir +".gif", row++);
 			
 			// other actions
-			addRowFromVertical(sheet, 4, sourcesPath+name+"/"+name+" "+dir+" walk.gif", row++, width, height);
-			addRowFromVertical(sheet, 8, sourcesPath+name+"/"+name+" "+dir+" attack.gif", row++, width, height);
+			addRowFromVertical(sheet, 4, sourcesPath+folderName+"/"+name+" "+dir+" walk.gif", row++, width, height);
+			addRowFromVertical(sheet, 8, sourcesPath+folderName+"/"+name+" "+dir+" attack.gif", row++, width, height);
 			++row; // no animation for dying
 		}
 		
-		sheet.write(ASSETS_PATH, name);
+		sheet.write(ASSETS_PATH, folderName);
 	}
 
 	private static void addRowFromVertical(SpriteSheet target, int numFrames, String sourceFile, int row, int sourceFrameWidth, int sourceFrameHeight) {
