@@ -2,10 +2,6 @@ package jmotion.sprite;
 
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
 
 
 public class StaticSprite implements Sprite {
@@ -35,12 +31,7 @@ public class StaticSprite implements Sprite {
 		g.drawImage(image, x, y, null);
 	}
 	
-	public StaticSprite(String imagePath) {
-		try {
-			image = ImageIO.read(new File(imagePath));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public StaticSprite(Image image) {
 		width = image.getWidth(null);
 		height = image.getHeight(null);
 	}

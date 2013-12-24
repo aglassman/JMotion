@@ -15,22 +15,14 @@ import javax.imageio.ImageIO;
 
 import jmotion.animation.FrameSet;
 import jmotion.construction.SpriteSheet;
+import jmotion.sprite.StaticSprite;
 
-public class AnimationFactory {
-
-	private static final HashMap<String, FrameSet> cachedAnimations;
-	private static final String ASSETS_PATH;
-
-	static {
-		cachedAnimations = new HashMap<String, FrameSet>();
-
-		ASSETS_PATH = "assets/";
-	}
+public class SpriteLoader {
 
 	public static void main(String[] args) {
 		String sourcesPath = "assets/sources/";
-		String folderName = "peasant";
-		String name = "peasant";
+		String folderName = "soldier";
+		String name = "soldier";
 
 		String[] directions = new String[] {"u", "r", "d", "l"};
 		String[] actions = new String[] {"walk", "attack", "die"};
@@ -52,7 +44,7 @@ public class AnimationFactory {
 			++row; // no animation for dying
 		}
 		
-		sheet.write(ASSETS_PATH, folderName);
+		sheet.write("assets", folderName);
 	}
 
 	private static void addRowFromVertical(SpriteSheet target, int numFrames, String sourceFile, int row, int sourceFrameWidth, int sourceFrameHeight) {
@@ -88,7 +80,7 @@ public class AnimationFactory {
 	 * Creates a new Sprite-Sheet and corresponding Manifest. The Manifest records the metadata for the
 	 * FrameSetAnimation to be built from the Sprite-Sheet.
 	 */
-	public static void createNew(String name, int frameWidth, int frameHeight, int frameBuffer, int framesLong, int numRows) {		
+	public void createNew(String name, int frameWidth, int frameHeight, int frameBuffer, int framesLong, int numRows) {		
 		int sheetWidth = frameWidth * framesLong + (framesLong+1)*frameBuffer;
 		int sheetHeight = frameHeight * numRows + (numRows+1)*frameBuffer;
 		
@@ -114,10 +106,10 @@ public class AnimationFactory {
 		// File IO
 		try {
 			// Save the Sprite-Sheet
-			ImageIO.write(sheetImage, "gif", new File(ASSETS_PATH + name + ".gif"));
+			ImageIO.write(sheetImage, "gif", new File(assetFolder + name + ".gif"));
 			
 			// Save the Manifest
-			FileWriter f = new FileWriter(new File(ASSETS_PATH + name + ".txt"));
+			FileWriter f = new FileWriter(new File(assetFolder + name + ".txt"));
 			f.write(frameWidth + " " + frameHeight + " " + framesLong + " " + frameBuffer + "\n");
 			
 			f.close();
@@ -126,19 +118,21 @@ public class AnimationFactory {
 		}
 	}
 	
+	public StaticSprite getStaticSprite(String name) {
+		return new StaticSprite(readImage(assetFolder + name));
+	}
+	
 	/**
 	 * Load a Manifest and a Sprite-Sheet and use them to construct a FrameSetAnimation
 	 */
-	public static FrameSet get(String name) {
+	public FrameSet getFrames(String name) {
 		name = name.toLowerCase();
 		if (cachedAnimations.containsKey(name))
 			return cachedAnimations.get(name).clone();
 		
-		Scanner manifestScanner = null;
-		try {
-			BufferedImage sheetImage = ImageIO.read(new File(ASSETS_PATH + name + ".gif"));
-
-			manifestScanner =  new Scanner(new File(ASSETS_PATH + name + ".txt"));
+		String filePath = assetFolder + name;		
+		try (Scanner manifestScanner = new Scanner(loader.getResourceAsStream(filePath+".txt"))) {
+			BufferedImage sheetImage = readImage(filePath + ".gif");
 	
 			String[] numbers = manifestScanner.nextLine().split(" ");
 			int numRows = Integer.parseInt(numbers[0]);
@@ -164,13 +158,31 @@ public class AnimationFactory {
 			cachedAnimations.put(name, animation);
 			
 			return animation;
-		} catch (IOException e) {
-			return null;
-		} finally {
-			if (manifestScanner != null)
-				manifestScanner.close();
 		}
 	}
+	
+	public SpriteLoader() {
+		this("");
+	}
+	
+	public BufferedImage readImage(String imageFile) {
+		try {
+			return ImageIO.read(loader.getResourceAsStream(imageFile));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public SpriteLoader(String assetFolder) {
+		this.assetFolder = assetFolder;
+		loader = Thread.currentThread().getContextClassLoader();
+		cachedAnimations = new HashMap<>();
+	}
+	
+	private String assetFolder;
+	private ClassLoader loader;
+	private HashMap<String, FrameSet> cachedAnimations;
 
 	private static int columnX(int column, int frameWidth, int frameBuffer) {
 		return frameBuffer + column * (frameBuffer+frameWidth);
