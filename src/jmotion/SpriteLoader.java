@@ -8,6 +8,7 @@ import java.awt.image.RasterFormatException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -166,8 +167,8 @@ public class SpriteLoader {
 	}
 	
 	public BufferedImage readImage(String imageFile) {
-		try {
-			return ImageIO.read(loader.getResourceAsStream(imageFile));
+		try (InputStream stream = loader.getResourceAsStream(imageFile)) {
+			return ImageIO.read(stream);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
