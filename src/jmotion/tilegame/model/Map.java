@@ -2,7 +2,7 @@ package jmotion.tilegame.model;
 
 import java.awt.Point;
 
-public abstract class Map<T extends MapTile> {
+public class Map<T extends MapTile> {
 	public final int WIDTH;
 	public final int HEIGHT;
 	public final int TILE_WIDTH;
@@ -74,6 +74,13 @@ public abstract class Map<T extends MapTile> {
 		
 		tiles = new MapTile[HEIGHT][WIDTH];
 		space = new PhysicalSpace(WIDTH*tileWidth, HEIGHT*tileWidth);
+	}
+	public Map(int width, int height, int tileWidth, MapTile defaultTile) {
+		this(width, height, tileWidth);
+		for (int row = 0; row<HEIGHT; ++row) {
+			for (int col = 0; col<WIDTH; ++col)
+				tiles[row][col] = defaultTile;
+		}
 	}
 	
 	protected PhysicalSpace space;
