@@ -68,6 +68,7 @@ public abstract class AnimatorPanel extends JPanel implements Runnable {
 					isMouseOver = false;
 				}
 				mouseClicked = mouseClickedEvent;
+				mouseRightClicked = mouseRightEvent;
 	
 				// Deriving class will step its time forward
 				advanceFrame(frameSleep);
@@ -81,6 +82,7 @@ public abstract class AnimatorPanel extends JPanel implements Runnable {
 				
 				// Reset mouse data, waiting for new events in the sleep time
 				mouseClickedEvent = false;
+				mouseRightEvent = false;
 			}
 
 			int frameRenderTime = (int) (System.currentTimeMillis() - frameStart);
@@ -116,14 +118,14 @@ public abstract class AnimatorPanel extends JPanel implements Runnable {
 		
 		MouseAdapter mouse = new MouseAdapter() {
 			public void mouseClicked(MouseEvent me) {
-				mouseClickedEvent = true;
+				mouseClickedEvent = me.getButton() == MouseEvent.BUTTON1;
+				mouseRightEvent = me.getButton() == MouseEvent.BUTTON3;
 			}
 			public void mousePressed(MouseEvent me) {
-				mouseDownEvent = true;
 			}
 			public void mouseReleased(MouseEvent me) {
-				mouseClickedEvent |= mouseDownEvent;
-				mouseDownEvent = false;
+				mouseClickedEvent |= me.getButton() == MouseEvent.BUTTON1;
+				mouseRightEvent |= me.getButton() == MouseEvent.BUTTON3;
 			}
 		};
 		
@@ -134,20 +136,21 @@ public abstract class AnimatorPanel extends JPanel implements Runnable {
 	protected abstract void advanceFrame(int millis);
 
 	protected abstract void render(Graphics2D g);
-
-	private boolean mouseClickedEvent;
-	private boolean mouseDownEvent;
 	
 	protected int mouseX;
 	protected int mouseY;
 	protected boolean isMouseOver;
 	protected boolean mouseClicked;
+	protected boolean mouseRightClicked;
 
 	protected int frameSleep;
 	
 	private Image doubleBuffImage;
 	private Thread animator;
 	private int targetFPS;
+
+	private boolean mouseClickedEvent;
+	private boolean mouseRightEvent;
 	
 	private boolean isPaused;
 	private boolean debugWindow;
