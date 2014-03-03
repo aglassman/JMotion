@@ -15,10 +15,14 @@ import jmotion.sprite.StaticSprite;
 
 public class SpriteLoader {
 
-	public StaticSprite getStaticSprite(String name) {		;
+	public StaticSprite getStaticSprite(String name) {
+		BufferedImage i = readImage(name);
+		return new StaticSprite(i);
+	}
+	
+	public BufferedImage readImage(String name) {
 		try {
-			BufferedImage i = ImageIO.read(new File(assetFolder + name));
-			return new StaticSprite(i);
+			return ImageIO.read(new File(assetFolder + name));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
