@@ -1,11 +1,11 @@
 package jmotion.test;
 
-import jmotion.SpriteLoader;
 import jmotion.animation.AnimationSequence;
 import jmotion.animation.FrameSet;
 import jmotion.animation.LoopAnimation;
 import jmotion.animation.MoveSprite;
 import jmotion.animation.PlayFramesAnimation;
+import jmotion.construction.SpriteLoader;
 import jmotion.sprite.FramesSprite;
 import jmotion.sprite.Sprite;
 
