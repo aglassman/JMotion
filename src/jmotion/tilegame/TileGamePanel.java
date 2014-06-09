@@ -7,90 +7,140 @@ import java.awt.Point;
 import jmotion.animation.AnimatorPanel;
 import jmotion.tilegame.model.Map;
 import jmotion.tilegame.model.MapTile;
+import jmotion.tilegame.model.TileCoord;
 
 public abstract class TileGamePanel<T extends MapTile> extends AnimatorPanel {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	public static boolean GRAPHICS_DEBUG = false;
-	
+
 	/**
-	 * Attempts to move the viewport by X and Y,
-	 * will not scroll beyond the boundaries of the map
+	 * Attempts to move the viewport, but will not scroll beyond the boundaries
+	 * of the map
 	 */
-	public void tryScroll(int x, int y) {
-		viewportX += x;
-		if (viewportX < 0)
-			viewportX = 0;
-		else if (viewportX > viewportMaxX)
-			viewportX = viewportMaxX;
-		
-		viewportY += y;
-		if (viewportY < 0)
-			viewportY = 0;
-		else if (viewportY > viewportMaxY)
-			viewportY = viewportMaxY;
+	public void tryScroll(int xScroll, int yScroll) {
+		setViewport(viewportX + xScroll, viewportY + yScroll);
+	}
+
+	public void setViewport(int x, int y) {
+		viewportX = Math.min(viewportMaxX, Math.max(0, x));
+		viewportY = Math.min(viewportMaxY, Math.max(0, y));
+
+		rowOffset = viewportY % tileWidth;
+		colOffset = viewportX % tileWidth;
+
+		rowStart = viewportY / tileWidth;
+		colStart = viewportX / tileWidth;
 	}
 
 	/**
 	 * Gets a position on the panel of (x,y) that accounts for the scroll
+	 * 
+	 * (x,y) is some real position in the game map
 	 */
-	public Point getScrolledPoint(int x, int y) {
-		return new Point(x-viewportX, y-viewportY);
+	public Point getPointOnScreen(int realX, int realY) {
+		return new Point(realX - viewportX, realY - viewportY);
 	}
-	
-	public TileGamePanel(Map<T> map, int tileWidth, int width, int height) {
+
+	/**
+	 * The absolute coordinates (not adjusted for scrolling) of the center of a
+	 * tile at the given TileCoord
+	 * 
+	 * For example if tileWidth is 10, the Point representing the center of
+	 * TileCoord (2, 3) would be (25, 35)
+	 */
+	public Point getSquareCenter(TileCoord s) {
+		return new Point(s.col * tileWidth + tileWidth / 2, s.row * tileWidth
+				+ tileWidth / 2);
+	}
+
+	/**
+	 * Finds the TileCoord of the tile containing the given on-screen point
+	 */
+	public TileCoord getCoordFromScreen(int realX, int realY) {
+		int row = (realY + viewportY) / tileWidth;
+		int col = (realX + viewportX) / tileWidth;
+		return new TileCoord(row, col);
+	}
+
+	public int getColDisplayX(int col) {
+		return (col - colStart) * tileWidth - colOffset;
+	}
+
+	public int getRowDisplayY(int row) {
+		return (row - rowStart) * tileWidth - rowOffset;
+	}
+
+	public int getTileWidth() {
+		return tileWidth;
+	}
+
+	public void setMap(Map<T> map) {
+		this.map = map;
+
+		viewportMaxX = map.WIDTH * tileWidth - WIDTH - tileWidth - tileWidth;
+		viewportMaxY = map.HEIGHT * tileWidth - HEIGHT - tileWidth - tileWidth;
+	}
+
+	@Override
+	public void setSize(int width, int height) {
+		super.setSize(width, height);
 		WIDTH = width;
 		HEIGHT = height;
-		this.map = map;
-		this.tileWidth = tileWidth;
-		
-		visibleRows = (height+tileWidth) / tileWidth;
-		visibleCols = (width+tileWidth) / tileWidth;
+		visibleRows = (height + tileWidth) / tileWidth;
+		visibleCols = (width + tileWidth) / tileWidth;
+	}
 
-		viewportMaxX = map.WIDTH*tileWidth - width - tileWidth;
-		viewportMaxY = map.HEIGHT*tileWidth - height - tileWidth;
-		
-		setSize(width, height);
+	public TileGamePanel(int tileWidth) {
+		this.tileWidth = tileWidth;
+
+		// Set a default size
+		setSize(100, 100);
+	}
+
+	public TileGamePanel(Map<T> map, int tileWidth) {
+		this(tileWidth);
+		setMap(map);
 	}
 
 	protected final void render(Graphics2D g) {
-		int minCol = viewportX / tileWidth;
-		int maxCol = minCol + visibleCols;
-		
-		int minRow = viewportY / tileWidth;
-		int maxRow = minRow + visibleRows - 1;
+		int maxCol = colStart + visibleCols - 1;
+		int maxRow = rowStart + visibleRows - 1;
 
-		int xOffset = viewportX % tileWidth;
-		int yOffset = viewportY % tileWidth;
-		
 		// Draw the visible tiles
-		int y = -yOffset;
-		for (int row = minRow; row<=maxRow; ++row) {
-			int x = -xOffset;
-			for (int col = minCol; col<=maxCol; ++col) {
+		int y = -rowOffset;
+		for (int row = rowStart; row <= maxRow && row < map.HEIGHT; ++row) {
+			int x = -colOffset;
+			for (int col = colStart; col <= maxCol && col < map.WIDTH; ++col) {
 				drawTile(g, x, y, row, col, map.get(row, col));
 				x += tileWidth;
 			}
 			y += tileWidth;
 		}
-		
+
 		renderForeground(g);
-		
+
 		g.setColor(Color.GREEN);
-		g.drawRect(0, 0, WIDTH-1, HEIGHT-1);
+		g.drawRect(0, 0, WIDTH - 1, HEIGHT - 1);
 	}
 
-	protected abstract void drawTile(Graphics2D g, int x, int y, int row, int col, T tile);
+	protected abstract void drawTile(Graphics2D g, int x, int y, int row,
+			int col, T tile);
 
 	protected abstract void renderForeground(Graphics2D g);
 
-	protected final int WIDTH;
-	protected final int HEIGHT;
+	protected int WIDTH;
+	protected int HEIGHT;
 	protected final int tileWidth;
-	protected final Map<T> map;
+	protected Map<T> map;
+
 	protected int viewportX;
 	protected int viewportY;
+	protected int rowStart;
+	protected int colStart;
+	protected int rowOffset;
+	protected int colOffset;
 
 	private int visibleRows;
 	private int visibleCols;

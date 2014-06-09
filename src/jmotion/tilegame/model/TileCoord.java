@@ -4,7 +4,7 @@ public class TileCoord {
 	public final int row;
 	public final int col;
 
-	public int manhattenDist(TileCoord other) {
+	public int manhattenDistance(TileCoord other) {
 		return Math.abs(row - other.row) + Math.abs(col - other.col);
 	}
 
@@ -27,8 +27,18 @@ public class TileCoord {
 	public int hashCode() {
 		return toString().hashCode();
 	}
-	
+
+	/**
+	 * The Von Neumann Neighborhood, four neighbors touching orthogonally
+	 */
 	public TileCoord[] getNeighbors() {
+		return new TileCoord[]{getNorth(), getSouth(), getEast(), getWest()};
+	}
+
+	/**
+	 * The Moore Neighborhood is the eight cells including diagonals
+	 */
+	public TileCoord[] getMooreNeighbors() {
 		return new TileCoord[]{getNorth(), getSouth(), getEast(), getWest()};
 	}
 
@@ -46,6 +56,10 @@ public class TileCoord {
 
 	public TileCoord getWest() {
 		return new TileCoord(row, col-1);
+	}
+	
+	public TileCoord getNeighbor(Direction d) {
+		return new TileCoord(row + d.y, col+d.y);
 	}
 	
 	public TileCoord(int row, int col) {

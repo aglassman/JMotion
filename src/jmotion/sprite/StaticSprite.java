@@ -3,7 +3,6 @@ package jmotion.sprite;
 import java.awt.Graphics2D;
 import java.awt.Image;
 
-
 public class StaticSprite implements Sprite {
 
 	public int getWidth() {
@@ -32,6 +31,7 @@ public class StaticSprite implements Sprite {
 	}
 	
 	public StaticSprite(Image image) {
+		this.image = image;
 		width = image.getWidth(null);
 		height = image.getHeight(null);
 	}

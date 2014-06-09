@@ -15,6 +15,10 @@ public class Map<T extends MapTile> {
 		space.addPhysical(p);
 	}
 	
+	public void set(T tile, TileCoord coord) {
+		tiles[coord.row][coord.col] = tile;
+	}
+	
 	public void set(T tile, int row, int col) {
 		tiles[row][col] = tile;
 	}
@@ -37,7 +41,7 @@ public class Map<T extends MapTile> {
 		int dist = Integer.MAX_VALUE;
 		TileCoord closest = null;
 		for (TileCoord c : coords) {
-			int d = from.manhattenDist(c);
+			int d = from.manhattenDistance(c);
 			if (d < dist) {
 				dist = d;
 				closest = c;

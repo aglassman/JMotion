@@ -14,7 +14,9 @@ public class SampleMapPanel extends TileGamePanel<SampleTile> {
 	private static final long serialVersionUID = 1L;
 
 	public SampleMapPanel(SampleMap map, int width, int height) {
-		super(map, map.TILE_WIDTH, width, height);
+		super(map, map.TILE_WIDTH);
+		setSize(width, height);
+
 		this.map = map;
 		scrollMargin = 4*map.TILE_WIDTH;
 		
@@ -47,7 +49,7 @@ public class SampleMapPanel extends TileGamePanel<SampleTile> {
 	protected void renderForeground(Graphics2D g) {
 		int heroX = map.getHero().getX();
 		int heroY = map.getHero().getY();
-		Point heroOnScreen = getScrolledPoint(heroX, heroY);
+		Point heroOnScreen = getPointOnScreen(heroX, heroY);
 		
 		g.setColor(Color.blue);
 		g.fillOval(heroOnScreen.x, heroOnScreen.y, 10, 10);
@@ -73,7 +75,7 @@ public class SampleMapPanel extends TileGamePanel<SampleTile> {
 			heroYMove = heroSpeed;
 		hero.move(heroXMove, heroYMove);
 		
-		Point heroOnScreen = getScrolledPoint(hero.getX(), hero.getY());
+		Point heroOnScreen = getPointOnScreen(hero.getX(), hero.getY());
 		
 		if (heroOnScreen.x <= scrollMargin)
 			scrollX = -scrollSpeed;
