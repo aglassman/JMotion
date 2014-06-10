@@ -90,6 +90,9 @@ public abstract class TileGamePanel<T extends MapTile> extends AnimatorPanel {
 		HEIGHT = height;
 		visibleRows = (height + tileWidth) / tileWidth;
 		visibleCols = (width + tileWidth) / tileWidth;
+		
+		if (map != null)
+			setMap(map);
 	}
 
 	public TileGamePanel(int tileWidth) {
@@ -125,8 +128,7 @@ public abstract class TileGamePanel<T extends MapTile> extends AnimatorPanel {
 		g.drawRect(0, 0, WIDTH - 1, HEIGHT - 1);
 	}
 
-	protected abstract void drawTile(Graphics2D g, int x, int y, int row,
-			int col, T tile);
+	protected abstract void drawTile(Graphics2D g, int x, int y, int row, int col, T tile);
 
 	protected abstract void renderForeground(Graphics2D g);
 
@@ -142,8 +144,8 @@ public abstract class TileGamePanel<T extends MapTile> extends AnimatorPanel {
 	protected int rowOffset;
 	protected int colOffset;
 
-	private int visibleRows;
-	private int visibleCols;
+	protected int visibleRows;
+	protected int visibleCols;
 	private int viewportMaxX;
 	private int viewportMaxY;
 }
