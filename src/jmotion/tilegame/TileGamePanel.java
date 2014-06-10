@@ -79,8 +79,8 @@ public abstract class TileGamePanel<T extends MapTile> extends AnimatorPanel {
 	public void setMap(Map<T> map) {
 		this.map = map;
 
-		viewportMaxX = map.WIDTH * tileWidth - WIDTH - tileWidth - tileWidth;
-		viewportMaxY = map.HEIGHT * tileWidth - HEIGHT - tileWidth - tileWidth;
+		viewportMaxX = map.WIDTH * tileWidth - WIDTH - 1;
+		viewportMaxY = map.HEIGHT * tileWidth - HEIGHT - 1;
 	}
 
 	@Override
