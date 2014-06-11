@@ -1,6 +1,7 @@
 package jmotion.tilegame;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Point;
 
@@ -51,8 +52,7 @@ public abstract class TileGamePanel<T extends MapTile> extends AnimatorPanel {
 	 * TileCoord (2, 3) would be (25, 35)
 	 */
 	public Point getSquareCenter(TileCoord s) {
-		return new Point(s.col * tileWidth + tileWidth / 2, s.row * tileWidth
-				+ tileWidth / 2);
+		return new Point(s.col * tileWidth + tileWidth / 2, s.row * tileWidth + tileWidth / 2);
 	}
 
 	/**
@@ -81,6 +81,8 @@ public abstract class TileGamePanel<T extends MapTile> extends AnimatorPanel {
 
 		viewportMaxX = map.WIDTH * tileWidth - WIDTH - 1;
 		viewportMaxY = map.HEIGHT * tileWidth - HEIGHT - 1;
+		
+		System.out.println("setting map");
 	}
 
 	@Override
@@ -90,16 +92,19 @@ public abstract class TileGamePanel<T extends MapTile> extends AnimatorPanel {
 		HEIGHT = height;
 		visibleRows = (height + tileWidth) / tileWidth;
 		visibleCols = (width + tileWidth) / tileWidth;
+		System.out.println("setting size: visRows: " + visibleRows);
 		
 		if (map != null)
 			setMap(map);
 	}
+	
+	@Override
+	public void setSize(Dimension d) {
+		setSize(d.width, d.height);
+	}
 
 	public TileGamePanel(int tileWidth) {
 		this.tileWidth = tileWidth;
-
-		// Set a default size
-		setSize(100, 100);
 	}
 
 	public TileGamePanel(Map<T> map, int tileWidth) {
