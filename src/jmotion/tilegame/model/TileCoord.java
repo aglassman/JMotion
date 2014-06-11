@@ -59,7 +59,7 @@ public class TileCoord {
 	}
 	
 	public TileCoord getNeighbor(Direction d) {
-		return new TileCoord(row + d.y, col+d.y);
+		return new TileCoord(row + d.y, col+d.x);
 	}
 	
 	public TileCoord(int row, int col) {
