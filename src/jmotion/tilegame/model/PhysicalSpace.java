@@ -1,6 +1,8 @@
 package jmotion.tilegame.model;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Tracks physical objects in two dimensional space.
@@ -32,6 +34,18 @@ public class PhysicalSpace {
 			}
 		};
 	}
+
+    public List<Physical> getCollisions(Physical p) {
+        List<Physical> collisions = new LinkedList<>();
+
+        // TODO - this is terrible brute force. You know what to do.
+        for (Physical other : getAllPhysicals()) {
+            if (other != p && collides(p, other))
+                collisions.add(other);
+        }
+
+        return collisions;
+    }
 	
 	public void moveObject(Physical p, int deltaX, int deltaY) {
 		p.setLocation(p.getX()+deltaX, p.getY()+deltaY);
@@ -66,11 +80,13 @@ public class PhysicalSpace {
 		
 		node.next = current.next;
 		current.next = node;
+        node.previous = current.next;
 	}
 	
 	public void removePhysical(Physical p) {
 		PhysicalNode before = findBefore(p);
 		before.next = before.next.next;
+        before.next.previous = before;
 	}
 	
 	public boolean contains(int x, int y) {
@@ -80,6 +96,7 @@ public class PhysicalSpace {
 	
 	public void removeAll() {
 		head.next = tail;
+        tail.previous = head;
 	}
 	
 	public PhysicalSpace(int width, int height) {
@@ -90,6 +107,10 @@ public class PhysicalSpace {
 		tail = new PhysicalNode();
 		head.next = tail;
 	}
+
+    private boolean collides(Physical a, Physical b) {
+        return a.getBounds().intersects(b.getBounds());
+    }
 	
 	/**
 	 * Find the Node which contains the given Physical
@@ -107,6 +128,7 @@ public class PhysicalSpace {
 		Physical physical;
 		int y;
 		PhysicalNode next;
+        PhysicalNode previous;
 	}
 	
 	private PhysicalNode head;
