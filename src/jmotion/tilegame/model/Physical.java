@@ -5,7 +5,7 @@ import java.awt.*;
 public class Physical {
 
     public Rectangle getBounds() {
-        return new Rectangle(x-width/2, y-height/2, width, height);
+        return new Rectangle(x+xOffset, y+yOffset, width, height);
     }
 
     public int getWidth() {
@@ -34,13 +34,17 @@ public class Physical {
 		this.y = y;
 	}
 
-    public Physical(int width, int height) {
+    public void setBounds(int xOffset, int yOffset, int width, int height) {
         this.width = width;
         this.height = height;
+        this.xOffset = xOffset;
+        this.yOffset = yOffset;
     }
 
     protected int x;
     protected int y;
     protected int width;
     protected int height;
+    protected int xOffset;
+    protected int yOffset;
 }

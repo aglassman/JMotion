@@ -11,7 +11,8 @@ public class SampleMap extends Map<SampleTile> {
 
 	public SampleMap(int width, int height, int tileWidth) {
 		super(width, height, tileWidth, SampleTile.GRASS);
-		hero = new Physical(20, 40);
+		hero = new Physical();
+        hero.setBounds(-5, -5, 10, 10);
 	}
 
 	private Physical hero;
